@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Terraform
+terraform/
+*.tfstate
+*.tfvars
+.terraform/
+
+# Kubernetes
+k8s/
+
+# Docs
+README.md
+docs/
+
+# Local dev
+.env
+.env.*
+
+# Node
+node_modules/
+app/web/node_modules/
+
+# Go
+app/bin/
+
+# OS
+.DS_Store
+Thumbs.db
