@@ -42,7 +42,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "s3_bucket_lifecycle" {
     noncurrent_version_expiration {
       noncurrent_days = 90
     }
-    
+
     abort_incomplete_multipart_upload {
       days_after_initiation = 7
     }
@@ -68,19 +68,19 @@ resource "aws_ecr_repository" "ecr_repository" {
 }
 
 resource "aws_ecr_lifecycle_policy" "ecr_lifecycle" {
-    repository = aws_ecr_repository.ecr_repository.name
+  repository = aws_ecr_repository.ecr_repository.name
 
-    policy = jsonencode({
-      rules = [
-        {
-          rulePriority = 1
-          description  = "Expire untagged images after 30 days"
-          selection    = {
-            tagStatus   = "untagged"
-            countType   = "imageCountMoreThan"
-            countNumber = 10
-         }
-        action       = {
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Expire untagged images after 30 days"
+        selection = {
+          tagStatus   = "untagged"
+          countType   = "imageCountMoreThan"
+          countNumber = 10
+        }
+        action = {
           type = "expire"
         }
       }
