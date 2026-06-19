@@ -39,3 +39,39 @@ variable "availability_mode" {
   type        = string
   default     = "regional"
 }
+
+variable "eks_cluster_name" {
+  description = "The name of the EKS cluster"
+  type        = string
+  default     = "memos-eks-cluster"
+}
+
+variable "kubernetes_version" {
+  description = "The version of Kubernetes to use for the EKS cluster"
+  type        = string
+  default     = "1.35"
+}
+
+variable "desired_size" {
+  description = "The desired number of worker nodes in the EKS node group"
+  type        = number
+  default     = 2
+}
+
+variable "max_size" {
+  description = "The maximum number of worker nodes in the EKS node group"
+  type        = number
+  default     = 3
+}
+
+variable "min_size" {
+  description = "The minimum number of worker nodes in the EKS node group"
+  type        = number
+  default     = 1
+}
+
+variable "max_unavailable" {
+  description = "The maximum number of nodes that can be unavailable during an update"
+  type        = number
+  default     = 1
+}

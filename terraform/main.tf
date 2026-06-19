@@ -8,3 +8,21 @@ module "vpc" {
   aws_region           = var.aws_region
   availability_mode    = var.availability_mode
 }
+
+module "eks" {
+  source             = "./modules/eks"
+  cluster_name       = var.eks_cluster_name
+  kubernetes_version = var.kubernetes_version
+  desired_size       = var.desired_size
+  max_size           = var.max_size
+  min_size           = var.min_size
+  max_unavailable    = var.max_unavailable
+  vpc_id             = module.vpc.vpc_id
+  private_subnet_ids = module.vpc.private_subnet_ids
+}
+
+module "sg" {
+  source       = "./modules/sg"
+  cluster_name = var.eks_cluster_name
+  vpc_id       = module.vpc.vpc_id
+}
