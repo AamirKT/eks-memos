@@ -23,7 +23,7 @@ RUN apk add --no-cache ca-certificates tzdata libc6-compat \
     && adduser -S -G app -H -D app \
     && mkdir -p /var/opt/memos \
     && chown app:app /var/opt/memos
-COPY --from=backend-builder /app/bin/app ./bin/app
+COPY --from=backend-builder /app/bin/app ./app
 USER app
 EXPOSE 8081
-CMD ["/app/bin/app"]
+CMD ["./app"]
