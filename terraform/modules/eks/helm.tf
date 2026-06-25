@@ -76,3 +76,16 @@ resource "helm_release" "traefik" {
     aws_eks_addon.core_dns
   ]
 }
+
+resource "helm_release" "argo_cd" {
+  name             = "argo-cd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  namespace        = "argo-cd"
+  create_namespace = true
+
+  depends_on = [
+    aws_eks_node_group.eks_node_group,
+    aws_eks_addon.core_dns
+  ]
+}
