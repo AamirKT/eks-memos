@@ -96,7 +96,8 @@ resource "aws_eks_node_group" "eks_node_group" {
   depends_on = [
     aws_iam_role_policy_attachment.eks_worker_node_policy,
     aws_iam_role_policy_attachment.eks_cni_policy,
-    aws_iam_role_policy_attachment.eks_registry_policy
+    aws_iam_role_policy_attachment.eks_registry_policy,
+    aws_eks_cluster.eks_cluster
   ]
 }
 
@@ -109,7 +110,7 @@ resource "aws_eks_addon" "vpc_cni" {
 resource "aws_eks_addon" "core_dns" {
   cluster_name = aws_eks_cluster.eks_cluster.name
   addon_name   = "coredns"
-  depends_on   = [aws_eks_cluster.eks_cluster]
+  depends_on   = [aws_eks_node_group.eks_node_group]
 }
 
 resource "aws_eks_addon" "kube_proxy" {
@@ -123,3 +124,47 @@ resource "aws_eks_addon" "pod_identity_agent" {
   addon_name   = "eks-pod-identity-agent"
   depends_on   = [aws_eks_cluster.eks_cluster]
 }
+
+resource "aws_iam_role" "memos_pod_role" {
+  name = "${var.cluster_name}-memos-pod-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = ["sts:AssumeRole", "sts:TagSession"]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "memos_secret_manager_policy" {
+  name = "${var.cluster_name}-memos-secret-manager-policy"
+  role = aws_iam_role.memos_pod_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = var.rds_secret_arn
+      }
+    ]
+  })
+}
+
+resource "aws_eks_pod_identity_association" "memos_pod_identity_association" {
+  cluster_name    = var.cluster_name
+  namespace       = var.namespace
+  service_account = var.service_account_name
+  role_arn        = aws_iam_role.memos_pod_role.arn
+}
+
