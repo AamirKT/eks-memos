@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: memos
+  namespace: argo-cd
+spec:
+  project: default
+  source:
+    repoURL: 'http://prometheus-community.github.io/helm-charts'
+    targetRevision: main
+    chart: kube-prometheus-stack
+    targetRevision: 77.0.1
+    helm:
+      values: |
+        grafana:
+          enabled: true
+          adminPassword: admin123
+
+        prometheus:
+          prometheusSpec:
+            retention: 7d
+  destination:        
+    server: 'https://kubernetes.default.svc'
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+       - CreateNamespace=true
+       - ServerSideApply=true
