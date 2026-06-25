@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: memos-ingress
+  namespace: memos
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    external-dns.alpha.kubernetes.io/hostname: memos.aamir-memos.co.uk
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - memos.aamir-memos.co.uk
+      secretName: memos-tls
+  rules:
+    - host: memos.aamir-memos.co.uk
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: memos-service
+                port:
+                  number: 80
