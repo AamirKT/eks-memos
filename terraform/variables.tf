@@ -75,3 +75,82 @@ variable "max_unavailable" {
   type        = number
   default     = 1
 }
+
+variable "db_instance_identifier" {
+  description = "The name of the database instance."
+  type        = string
+  default     = "memos-db-instance"
+}
+
+variable "db_engine" {
+  description = "The database engine to use."
+  type        = string
+  default     = "postgres"
+}
+
+variable "db_engine_version" {
+  description = "The version of the database engine to use."
+  type        = string
+  default     = "18.4"
+}
+
+variable "db_instance_class" {
+  description = "The instance type of the RDS instance."
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "The allocated storage in gigabytes."
+  type        = number
+  default     = 20
+}
+
+variable "db_name" {
+  description = "The name of the database to create when the DB instance is created."
+  type        = string
+  default     = "memos"
+}
+
+variable "db_username" {
+  description = "The username for the database."
+  type        = string
+  default     = "memos_user"
+}
+
+variable "db_multi_az" {
+  description = "Specifies if the RDS instance is multi-AZ."
+  type        = bool
+  default     = true
+}
+
+variable "eks_namespace" {
+  description = "The namespace to use for the EKS cluster"
+  type        = string
+  default     = "memos-namespace"
+}
+
+variable "eks_service_account_name" {
+  description = "The name of the service account to use for the EKS cluster"
+  type        = string
+  default     = "memos-service-account"
+}
+
+variable "skip_final_snapshot" {
+  description = "Determines whether a final DB snapshot is created before the DB instance is deleted."
+  type        = bool
+  default     = true
+}
+
+variable "domain_name" {
+  description = "The domain name for the Route 53 hosted zone"
+  type        = string
+  default     = "aamir-memos.co.uk."
+}
+
+variable "zone_id" {
+  description = "The ID of the Route 53 hosted zone"
+  type        = string
+  default     = "Z10334603J0829B66W4Q5"
+}
+
