@@ -7,14 +7,12 @@ spec:
   project: default
   source:
     repoURL: 'http://prometheus-community.github.io/helm-charts'
-    targetRevision: main
     chart: kube-prometheus-stack
     targetRevision: 77.0.1
     helm:
       values: |
         grafana:
           enabled: true
-          adminPassword: admin123
 
         prometheus:
           prometheusSpec:
