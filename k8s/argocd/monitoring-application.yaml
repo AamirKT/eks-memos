@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: memos
+  name: monitoring
   namespace: argo-cd
 spec:
   project: default
@@ -13,6 +13,20 @@ spec:
       values: |
         grafana:
           enabled: true
+
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            hosts:
+              - grafana.aamir-memos.co.uk
+            path: /
+            pathType: Prefix
+            tls:
+              - hosts:
+                  - grafana.aamir-memos.co.uk
+                secretName: grafana-tls
 
         prometheus:
           prometheusSpec:
