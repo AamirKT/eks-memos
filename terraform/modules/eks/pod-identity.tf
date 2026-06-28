@@ -93,7 +93,10 @@ resource "aws_iam_role_policy" "external_secrets_policy" {
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ]
-        Resource = var.rds_secret_arn
+        Resource = [
+          var.rds_secret_arn,
+          "arn:aws:secretsmanager:${var.region}:$657672948849:secret:grafana/admin-*"
+        ]
       }
     ]
   })
