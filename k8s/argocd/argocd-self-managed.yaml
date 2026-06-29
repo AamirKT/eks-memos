@@ -17,8 +17,7 @@ spec:
           ingress:
             enabled: true
             ingressClassName: traefik
-            hosts:
-              - argocd.aamir-memos.co.uk
+            hostname: argocd.aamir-memos.co.uk
             path: /
             pathType: Prefix
             tls:
