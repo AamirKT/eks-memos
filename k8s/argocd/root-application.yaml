@@ -1,0 +1,19 @@
+apiVersion : argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argo-cd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/AamirKT/eks-memos.git
+    targetRevision: main
+    path: k8s/argocd
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argo-cd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      
