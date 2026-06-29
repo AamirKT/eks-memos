@@ -9,7 +9,6 @@ spec:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
     targetRevision: 9.7.1
-
     helm:
       values: |
         server:
@@ -18,8 +17,6 @@ spec:
           ingress:
             enabled: true
             ingressClassName: traefik
-            annotations:
-              cert-manager.io/cluster-issuer: letsencrypt-prod
             hosts:
               - argocd.aamir-memos.co.uk
             path: /
@@ -34,13 +31,13 @@ spec:
           rbac:
             policy.default: role:read-only
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: https://kubernetes.default.svc
     namespace: argo-cd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-       - CreateNamespace=true 
-       - ServerSideApply=true
+      - CreateNamespace=true
+      - ServerSideApply=true
        
