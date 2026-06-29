@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-cd
+  namespace: argo-cd
+spec:
+  project: default
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argo-cd
+    targetRevision: 9.7.1
+
+    helm:
+      values: |
+        server:
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            hosts:
+              - argocd.aamir-memos.co.uk
+            path: /
+            pathType: Prefix
+            tls:
+              - hosts:
+                  - argocd.aamir-memos.co.uk
+                secretName: argocd-tls
+        configs:
+          rbac:
+            policy.default: role:read-only
+        server:
+          service:
+            type: ClusterIP
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argo-cd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+       - CreateNamespace=true 
+       - ServerSideApply=true
+       
