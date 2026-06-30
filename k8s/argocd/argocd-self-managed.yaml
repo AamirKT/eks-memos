@@ -17,6 +17,8 @@ spec:
 
           service:
             type: ClusterIP
+            servicePort: 80
+            serviceTargetPort: 80
 
           ingress:
             enabled: true
