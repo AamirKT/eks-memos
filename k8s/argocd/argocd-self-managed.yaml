@@ -12,26 +12,35 @@ spec:
     helm:
       values: |
         server:
+          extraArgs:
+            - --insecure
+
           service:
             type: ClusterIP
+
           ingress:
             enabled: true
             ingressClassName: traefik
             hostname: argocd.aamir-memos.co.uk
             path: /
             pathType: Prefix
-            tls:
-              - hosts:
-                  - argocd.aamir-memos.co.uk
-                secretName: argocd-tls
+
+            annotations:
+              traefik.ingress.kubernetes.io/service.serversscheme: http
+
+            tls: []
+
         configs:
           cm:
             url: https://argocd.aamir-memos.co.uk
+
           rbac:
             policy.default: role:read-only
+
   destination:
     server: https://kubernetes.default.svc
     namespace: argo-cd
+
   syncPolicy:
     automated:
       prune: true
@@ -39,4 +48,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-       
