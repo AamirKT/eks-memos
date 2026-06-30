@@ -29,6 +29,7 @@ spec:
 
             annotations:
               traefik.ingress.kubernetes.io/service.serversscheme: http
+              traefik.ingress.kubernetes.io/service.servertransport: disabled
 
             tls: []
 
