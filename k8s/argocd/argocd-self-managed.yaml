@@ -5,10 +5,12 @@ metadata:
   namespace: argo-cd
 spec:
   project: default
+
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
     targetRevision: 9.7.1
+
     helm:
       values: |
         server:
@@ -17,21 +19,22 @@ spec:
 
           service:
             type: ClusterIP
-            servicePort: 80
-            serviceTargetPort: 80
 
           ingress:
             enabled: true
             ingressClassName: traefik
+
             hostname: argocd.aamir-memos.co.uk
             path: /
             pathType: Prefix
 
             annotations:
-              traefik.ingress.kubernetes.io/service.serversscheme: http
-              traefik.ingress.kubernetes.io/service.servertransport: disabled
+              cert-manager.io/cluster-issuer: letsencrypt-prod
 
-            tls: []
+            tls:
+              - hosts:
+                  - argocd.aamir-memos.co.uk
+                secretName: argocd-server-tls
 
         configs:
           cm:
