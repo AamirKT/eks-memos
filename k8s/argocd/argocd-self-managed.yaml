@@ -13,35 +13,38 @@ spec:
 
     helm:
       values: |
-        server:
-          extraArgs:
-            - --insecure
+        configs:
+          params:
+            server.insecure: true
+          cm:
+            url: https://argocd.aamir-memos.co.uk
+          rbac:
+            policy.default: role:read-only
 
+        server:
           service:
             type: ClusterIP
+            servicePortHttp: 80
+            servicePortHttps: 443
 
           ingress:
             enabled: true
             ingressClassName: traefik
-
             hostname: argocd.aamir-memos.co.uk
             path: /
             pathType: Prefix
 
             annotations:
+              traefik.ingress.kubernetes.io/router.entrypoints: websecure
+              traefik.ingress.kubernetes.io/router.tls: "true"
+              traefik.ingress.kubernets.io/service.scheme: http
+              traefik.ingress.kubernetes.io/servertransport: insecure@internal
               cert-manager.io/cluster-issuer: letsencrypt-prod
 
             tls:
               - hosts:
                   - argocd.aamir-memos.co.uk
                 secretName: argocd-server-tls
-
-        configs:
-          cm:
-            url: https://argocd.aamir-memos.co.uk
-
-          rbac:
-            policy.default: role:read-only
 
   destination:
     server: https://kubernetes.default.svc

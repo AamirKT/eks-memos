@@ -9,6 +9,7 @@ spec:
     repoURL: https://github.com/AamirKT/eks-memos.git
     targetRevision: main
     path: k8s/argocd
+    recurse: true
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argo-cd
