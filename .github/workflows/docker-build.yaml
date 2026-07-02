@@ -104,7 +104,7 @@ jobs:
               exit 1
             fi
 
-            sed -i "s|image .*|image: ${IMAGE_URI}|" k8s/apps/deployment.yaml
+            sed -i "s|image .*|image: ${IMAGE_URI}|" k8s/app/deployment.yaml
 
         - name: Commit and push changes
           run: |
