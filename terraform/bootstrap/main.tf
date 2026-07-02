@@ -110,7 +110,7 @@ resource "aws_iam_role" "github_actions_role" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringEquals = {
-            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:*"
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:ref:refs/heads/main"
           }
         }
       }
@@ -126,9 +126,13 @@ resource "aws_iam_role_policy" "github_actions_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Effect   = "Allow"
+        Action   = ["ecr:GetAuthorizationToken"]
+        Resource = "*"
+      },
+      {
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
@@ -138,7 +142,7 @@ resource "aws_iam_role_policy" "github_actions_policy" {
           "ecr:CompleteLayerUpload",
           "ecr:DescribeRepositories"
         ]
-        Resource = "*"
+        Resource = aws_ecr_repository.ecr_repository.arn
       },
       {
         Effect = "Allow"
