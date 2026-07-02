@@ -100,24 +100,15 @@ jobs:
           
             IMAGE_URI="${{ needs.build-and-push.outputs.image_uri }}"
 
-            echo "Updating deployment image to ${IMAGE_URI}"
-
-            echo "===== BEFORE DIFF ====="
-            git status
-
-            echo "===== IMAGE LINE BEFORE ====="
-            grep -n "image" k8s/app/deployment.yaml || true
-
-            echo "===== RUNNING SED ====="
             sed -i "s|image: .*|image: ${IMAGE_URI}|" k8s/app/deployment.yaml
 
-            echo "===== IMAGE LINE AFTER ====="
-            grep -n "image" k8s/app/deployment.yaml || true
+            if git diff --quiet k8s/app/deployment.yaml; then
+              echo "No changes to deployment.yaml"
+            else
+              echo "Deployment image updated to ${IMAGE_URI}"
+            fi
 
-            echo "===== GIT DIFF ====="
             git diff k8s/app/deployment.yaml || true
-
-            sed -i "s|image: .*|image: ${IMAGE_URI}|" k8s/app/deployment.yaml
 
         - name: Commit and push changes
           run: |
