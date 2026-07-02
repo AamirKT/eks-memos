@@ -4,6 +4,6 @@ repos:
   hooks:
     - id: terraform_fmt
     - id: terraform_validate
-    # - id: terraform_tflint
+    - id: terraform_tflint
       exclude: ^terraform/modules/
     - id: terraform_docs

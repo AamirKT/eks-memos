@@ -30,10 +30,6 @@ data "aws_eks_cluster" "eks_cluster" {
   name = module.eks.eks_cluster_name
 }
 
-data "aws_eks_cluster_auth" "eks_cluster" {
-  name = module.eks.eks_cluster_name
-}
-
 provider "helm" {
   kubernetes = {
     host                   = data.aws_eks_cluster.eks_cluster.endpoint
