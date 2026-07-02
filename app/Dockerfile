@@ -1,17 +1,17 @@
 FROM node:24-alpine@sha256:fb71d01345f11b708a3553c66e7c74074f2d506400ea81973343d915cb64eef0 AS frontend-builder
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
-COPY app/web/package.json app/web/pnpm-lock.yaml ./
+COPY web/package.json web/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
-COPY app/web/ ./
+COPY web/ ./
 RUN pnpm build
 
 FROM golang:1.26-alpine@sha256:7a3e50096189ad57c9f9f865e7e4aa8585ed1585248513dc5cda498e2f41812c AS backend-builder
 WORKDIR /app
 RUN apk --no-cache add git
-COPY app/go.mod app/go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
-COPY app/ ./
+COPY . .
 COPY --from=frontend-builder --chown=app:app /app/dist ./server/router/frontend/dist
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w" -o bin/app ./cmd/memos
