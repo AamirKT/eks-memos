@@ -99,12 +99,9 @@ jobs:
           run: |
             IMAGE_URI="${{ needs.build-and-push.outputs.image_uri }}"
 
-            if [ -z "$IMAGE_URI" ]; then
-              echo "Error: IMAGE_URI is empty. Exiting."
-              exit 1
-            fi
+            echo "Updating deployment image to ${IMAGE_URI}"
 
-            sed -i "s|image .*|image: ${IMAGE_URI}|" k8s/app/deployment.yaml
+            sed -i "s|image .*memos-ecr.*|image: ${IMAGE_URI}|" k8s/app/deployment.yaml
 
         - name: Commit and push changes
           run: |
