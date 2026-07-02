@@ -1,0 +1,82 @@
+name: Build and push Docker image to ECR
+on:
+  push:
+    branches:
+      - main
+    paths:
+        - 'app/**'
+
+  workflow_dispatch:
+    
+env:
+    AWS_REGION: eu-west-2
+    ECR_REGISTRY: ${{ vars.ECR_REGISTRY }}
+    ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+
+concurrency:
+    group: build-and-push-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Configure AWS credentials via OIDC
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: ${{ secrets.BUILD_ROLE }}
+            aws-region: ${{ env.AWS_REGION }}
+            role-session-name: github-build-role
+
+        - name: Login to Amazon ECR
+          uses: aws-actions/amazon-ecr-login@v2
+           
+        - name: Setup Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Set image tag
+          id: tag
+          run: |
+            SHORT_SHA=${GITHUB_SHA::8}
+            echo "IMAGE_TAG=git-${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+        - name: Build Docker image
+          uses: docker/build-push-action@v6
+          with:
+            context: ./app
+            file: ./app/Dockerfile
+            load: true
+            push: false
+            tags: local-image:scan
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+            platforms: linux/amd64
+
+        - name: Scan image for vulnerabilities
+          uses: aquasecurity/trivy-action@v0.35.0
+          with:
+            image-ref: local-image:scan
+            format: 'table'
+            exit-code: "1"
+            severity: CRITICAL
+
+        - name: Tag and Push Docker image
+          run: |
+            IMAGE_URI=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.tag.outputs.IMAGE_TAG }}
+            docker tag local-image:scan "$IMAGE_URI"
+            docker push "$IMAGE_URI"
+            echo "$IMAGE_URI" > image-uri.txt
+
+        - name: Upload image URI as artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: image-uri
+            path: image-uri.txt
