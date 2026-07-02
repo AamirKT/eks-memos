@@ -52,7 +52,7 @@ jobs:
           uses: docker/build-push-action@v6
           with:
             context: ./app
-            file: Dockerfile
+            file: ./app/Dockerfile
             load: true
             push: false
             tags: local-image:scan
