@@ -17,6 +17,8 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w" -o bin/app ./cmd/memos
 
 FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d
+LABEL build_test="true"
+LABEL build_date="2026-07-02"
 WORKDIR /app
 RUN apk add --no-cache ca-certificates tzdata libc6-compat \
     && addgroup -S app \
