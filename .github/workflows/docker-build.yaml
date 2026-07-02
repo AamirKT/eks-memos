@@ -101,7 +101,7 @@ jobs:
 
             echo "Updating deployment image to ${IMAGE_URI}"
 
-            sed -i "s|image .*memos-ecr.*|image: ${IMAGE_URI}|" k8s/app/deployment.yaml
+            sed -i "s|image: .*|image: ${IMAGE_URI}|" k8s/app/deployment.yaml
 
         - name: Commit and push changes
           run: |
