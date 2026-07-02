@@ -194,4 +194,31 @@ resource "aws_iam_policy_attachment" "terraform_plan_readonly" {
   roles      = [aws_iam_role.terraform_plan.name]
 }
 
+resource "aws_iam_role_policy" "terraform_plan_state_access" {
+  name = "terraform-plan-state-access"
+  role = aws_iam_role.terraform_plan.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ]
+        Resource = aws_s3_bucket.s3_bucket.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = "${aws_s3_bucket.s3_bucket.arn}/*"
+      }
+    ]
+  })
+}
+
   
