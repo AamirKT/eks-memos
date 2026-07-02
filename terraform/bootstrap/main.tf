@@ -221,4 +221,23 @@ resource "aws_iam_role_policy" "terraform_plan_state_access" {
   })
 }
 
+resource "aws_iam_role_policy" "terraform_plan_secrets" {
+  name = "terraform-plan-secrets"
+  role = aws_iam_role.terraform_plan.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
   
