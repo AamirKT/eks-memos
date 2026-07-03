@@ -67,6 +67,10 @@ jobs:
           working-directory: terraform
           run: terraform init
 
+        - name: Show backend info
+          run: terraform init -reconfigure -backend-config=""
+          working-directory: terraform
+
         - name: Terraform format
           working-directory: terraform
           run: terraform fmt -check
@@ -74,6 +78,19 @@ jobs:
         - name: Terraform Validate
           working-directory: terraform
           run: terraform validate
+
+        - name: Debug state
+          run: terraform state list
+          working-directory: terraform
+
+        - name: Debug Kubernetes access
+          run: |
+            aws eks update-kubeconfig \
+            --region eu-west-2 \
+            --name memos-eks-cluster
+
+            kubectl get ns
+            helm list -A
 
         - name: Terraform Plan
           working-directory: terraform
