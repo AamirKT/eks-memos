@@ -15,6 +15,8 @@ env:
     AWS_REGION: eu-west-2
     TF_VAR_route53_zone_id: ${{ vars.ROUTE53_ZONE_ID }}
     TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
+    TF_INPUT: false
+    TF_IN_AUTOMATION: true
 
 jobs:
     terraform-plan:
@@ -24,7 +26,6 @@ jobs:
         permissions:
             contents: read
             id-token: write
-            actions: read
 
         steps:
         - name: Checkout code
@@ -38,6 +39,16 @@ jobs:
             role-to-assume: ${{ secrets.TERRAFORM_PLAN_ROLE }}
             aws-region: ${{ env.AWS_REGION }}
             role-session-name: terraform-plan
+
+        - name: Setup kubeconfig
+          run: |
+            aws eks update-kubeconfig \
+            --region eu-west-2 \
+            --name memos-eks-cluster
+
+            export KUBECONFIG=$HOME/.kube/config
+
+            kubectl get ns
 
         - name: Setup TFLint
           uses: terraform-linters/setup-tflint@v6
@@ -67,10 +78,6 @@ jobs:
           working-directory: terraform
           run: terraform init
 
-        - name: Show backend info
-          run: terraform init -reconfigure -backend-config=""
-          working-directory: terraform
-
         - name: Terraform format
           working-directory: terraform
           run: terraform fmt -check
@@ -79,18 +86,9 @@ jobs:
           working-directory: terraform
           run: terraform validate
 
-        - name: Debug state
-          run: terraform state list
+        - name: Terraform Refresh
           working-directory: terraform
-
-        - name: Debug Kubernetes access
-          run: |
-            aws eks update-kubeconfig \
-            --region eu-west-2 \
-            --name memos-eks-cluster
-
-            kubectl get ns
-            helm list -A
+          run: terraform apply -refresh-only -auto-approve
 
         - name: Terraform Plan
           working-directory: terraform
