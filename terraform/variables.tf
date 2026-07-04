@@ -154,3 +154,9 @@ variable "zone_id" {
   default     = "Z10334603J0829B66W4Q5"
 }
 
+variable "memos_access_policy_arn" {
+  description = "The ARN of the IAM policy for Memos access"
+  type        = string
+  default     = "arn:aws:iam::657672948849:role/terraform-plan-role"
+}
+

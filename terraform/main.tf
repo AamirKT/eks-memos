@@ -26,6 +26,8 @@ module "eks" {
   region                   = var.aws_region
   domain_name              = var.domain_name
   zone_id                  = var.zone_id
+  memos_access_policy_arn  = var.memos_access_policy_arn
+  memos_secret_arn         = module.rds.rds_secret_arn
 }
 
 module "sg" {

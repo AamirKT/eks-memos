@@ -73,3 +73,13 @@ variable "zone_id" {
   type        = string
 }
 
+variable "memos_access_policy_arn" {
+  description = "The ARN of the IAM policy for Memos access"
+  type        = string
+}
+
+variable "memos_secret_arn" {
+  description = "The ARN of the secret containing the Memos credentials"
+  type        = string
+}
+

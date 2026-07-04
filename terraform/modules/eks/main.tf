@@ -168,3 +168,25 @@ resource "aws_eks_pod_identity_association" "memos_pod_identity_association" {
   role_arn        = aws_iam_role.memos_pod_role.arn
 }
 
+resource "aws_eks_access_entry" "memos_access_entry" {
+  cluster_name  = var.cluster_name
+  principal_arn = var.memos_access_policy_arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "memos_access_policy_association" {
+  cluster_name  = var.cluster_name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = var.memos_access_policy_arn
+
+  depends_on = [
+    aws_eks_access_entry.memos_access_entry
+  ]
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
+
+
