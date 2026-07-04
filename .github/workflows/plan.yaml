@@ -49,6 +49,19 @@ jobs:
           working-directory: terraform
           run: tflint --init
 
+        - name: Verify cluster access
+          run: |
+            aws eks update-kubeconfig \
+              --region eu-west-2 \
+              --name memos-eks-cluster
+
+            kubectl get nodes
+            helm list -A
+
+        - name: Show Helm resources in state
+          working-directory: terraform
+          run: terraform state list | grep helm_release
+
         - name: Run TFLint
           working-directory: terraform
           run: tflint
