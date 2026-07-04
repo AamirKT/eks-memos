@@ -26,6 +26,7 @@ resource "helm_release" "external_dns" {
 
 resource "helm_release" "external_secrets" {
   name             = "external-secrets"
+  version          = "2.6.0"
   repository       = "https://charts.external-secrets.io"
   chart            = "external-secrets"
   namespace        = "external-secrets"
@@ -39,6 +40,7 @@ resource "helm_release" "external_secrets" {
 
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
+  version          = "v1.20.2"
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
   namespace        = "cert-manager"
@@ -58,6 +60,7 @@ resource "helm_release" "cert_manager" {
 
 resource "helm_release" "traefik" {
   name             = "traefik"
+  version          = "41.0.0"
   repository       = "https://helm.traefik.io/traefik"
   chart            = "traefik"
   namespace        = "traefik"
@@ -79,6 +82,7 @@ resource "helm_release" "traefik" {
 
 resource "helm_release" "argo_cd" {
   name             = "argo-cd"
+  version          = "9.7.0"
   repository       = "https://argoproj.github.io/argo-helm"
   chart            = "argo-cd"
   namespace        = "argo-cd"
