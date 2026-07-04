@@ -40,16 +40,6 @@ jobs:
             aws-region: ${{ env.AWS_REGION }}
             role-session-name: terraform-plan
 
-        - name: Setup kubeconfig
-          run: |
-            aws eks update-kubeconfig \
-            --region eu-west-2 \
-            --name memos-eks-cluster
-
-            export KUBECONFIG=$HOME/.kube/config
-
-            kubectl get ns
-
         - name: Setup TFLint
           uses: terraform-linters/setup-tflint@v6
           with:
@@ -85,10 +75,6 @@ jobs:
         - name: Terraform Validate
           working-directory: terraform
           run: terraform validate
-
-        - name: Terraform Refresh
-          working-directory: terraform
-          run: terraform apply -refresh-only -auto-approve
 
         - name: Terraform Plan
           working-directory: terraform
