@@ -51,8 +51,9 @@ jobs:
           if: ${{ github.event_name == 'workflow_run' }}
           uses: actions/download-artifact@v4
           with:
-            name: terraform-plan
-            path: terraform
+            name: terraform-plan-artifact
+            run-id: ${{ github.event.workflow_run.id }}
+            github-token: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Terraform apply
           working-directory: terraform
