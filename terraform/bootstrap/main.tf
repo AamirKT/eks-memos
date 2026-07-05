@@ -334,3 +334,69 @@ resource "aws_iam_role_policy" "terraform_apply_policy" {
     ]
   })
 }
+
+resource "aws_iam_role" "terraform_destroy" {
+  name = "terraform-destroy-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.github.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:ref:refs/heads/main"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "terraform_destroy_policy" {
+  name = "terraform-destroy-policy"
+  role = aws_iam_role.terraform_destroy.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          aws_s3_bucket.s3_bucket.arn,
+          "${aws_s3_bucket.s3_bucket.arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:*",
+          "ec2:*",
+          "iam:*",
+          "s3:*",
+          "rds:*",
+          "route53:*",
+          "elasticloadbalancing:*",
+          "autoscaling:*",
+          "logs:*",
+          "cloudwatch:*",
+          "secretsmanager:*",
+          "kms:*",
+          "lambda:*"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
