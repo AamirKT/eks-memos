@@ -1,0 +1,59 @@
+name: Terraform Apply
+
+on:
+  workflow_run:
+    workflows: ["Terraform Plan"]
+    types:
+      - completed
+
+  workflow_dispatch:
+  
+concurrency:
+    group: terraform-apply
+    cancel-in-progress: true
+
+env:
+    AWS_REGION: eu-west-2
+   
+jobs:
+    terraform-apply:
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+        permissions:
+            contents: read
+            id-token: write
+            actions: read
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+          with:
+            ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+        - name: Configure AWS credentials via OIDC
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: ${{ secrets.TERRAFORM_APPLY_ROLE }}
+            aws-region: ${{ env.AWS_REGION }}
+            role-session-name: terraform-apply
+
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v3
+          with:
+            terraform_version: 1.15.0
+            
+        - name: Terraform Init
+          working-directory: terraform
+          run: terraform init
+        
+        - name: Download Terraform plan artifact
+          if: ${{ github.event_name == 'workflow_run' }}
+          uses: actions/download-artifact@v4
+          with:
+            name: terraform-plan
+            path: terraform
+
+        - name: Terraform apply
+          working-directory: terraform
+          run: terraform apply -input=false -auto-approve tfplan
