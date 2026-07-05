@@ -38,6 +38,7 @@ jobs:
             name: terraform-plan
             run-id: ${{ github.event.workflow_run.id }}
             github-token: ${{ secrets.GITHUB_TOKEN }}
+            path: terraform
 
         - name: Configure AWS credentials via OIDC
           uses: aws-actions/configure-aws-credentials@v4
