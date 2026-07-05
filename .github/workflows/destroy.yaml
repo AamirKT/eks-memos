@@ -1,0 +1,45 @@
+name: Terraform Destroy
+
+on:
+    workflow_dispatch:
+
+env:
+    AWS_REGION: eu-west-2
+    TF_VAR_route53_zone_id: ${{ vars.ROUTE53_ZONE_ID }}
+    TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
+
+concurrency:
+    group: terraform-destroy
+    cancel-in-progress: false
+   
+jobs:
+    terraform-destroy:
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Configure AWS credentials via OIDC
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: ${{ secrets.TERRAFORM_DESTROY_ROLE }}
+            aws-region: ${{ env.AWS_REGION }}
+            role-session-name: terraform-destroy
+
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v4
+          with:
+            terraform_version: 1.15.0
+            
+        - name: Terraform Init
+          working-directory: terraform
+          run: terraform init -reconfigure
+
+        - name: Terraform Destroy
+          working-directory: terraform
+          run: terraform destroy -auto-approve -lock-timeout=20m
