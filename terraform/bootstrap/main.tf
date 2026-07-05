@@ -335,6 +335,11 @@ resource "aws_iam_role_policy" "terraform_apply_policy" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "terraform_apply_policy_attachment" {
+  role       = aws_iam_role.terraform_apply.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
 resource "aws_iam_role" "terraform_destroy" {
   name = "terraform-destroy-role"
 
