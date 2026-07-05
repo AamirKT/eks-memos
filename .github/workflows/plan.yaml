@@ -15,8 +15,6 @@ env:
     AWS_REGION: eu-west-2
     TF_VAR_route53_zone_id: ${{ vars.ROUTE53_ZONE_ID }}
     TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
-    TF_INPUT: false
-    TF_IN_AUTOMATION: true
 
 jobs:
     terraform-plan:
@@ -48,16 +46,7 @@ jobs:
         - name: Init TFLint
           working-directory: terraform
           run: tflint --init
-
-        - name: Verify cluster access
-          run: |
-            aws eks update-kubeconfig \
-              --region eu-west-2 \
-              --name memos-eks-cluster
-
-            kubectl get nodes
-            helm list -A
-
+      
         - name: Run TFLint
           working-directory: terraform
           run: tflint
