@@ -5,14 +5,14 @@ metadata:
   namespace: argo-cd
 spec:
 project: default
-  source:
-    repoURL: 'https://github.com/AamirKT/eks-memos.git'
-    targetRevision: main
-    path: k8s/apps
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: argo-cd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+source:
+  repoURL: 'https://github.com/AamirKT/eks-memos.git'
+  targetRevision: main
+  path: k8s/apps
+destination:
+  server: 'https://kubernetes.default.svc'
+  namespace: argo-cd
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
