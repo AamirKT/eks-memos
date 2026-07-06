@@ -1,9 +1,11 @@
 resource "helm_release" "external_dns" {
   name             = "external-dns"
+  version          = "1.21.1"
   repository       = "https://kubernetes-sigs.github.io/external-dns/"
   chart            = "external-dns"
   namespace        = "external-dns"
   create_namespace = true
+  take_ownership   = true
 
   values = [
     yamlencode({
@@ -31,6 +33,7 @@ resource "helm_release" "external_secrets" {
   chart            = "external-secrets"
   namespace        = "external-secrets"
   create_namespace = true
+  take_ownership   = true
 
   depends_on = [
     aws_eks_node_group.eks_node_group,
@@ -45,10 +48,12 @@ resource "helm_release" "cert_manager" {
   chart            = "cert-manager"
   namespace        = "cert-manager"
   create_namespace = true
-
+  take_ownership   = true
   values = [
     yamlencode({
-      installCRDs = true
+      crds = {
+        enabled = true
+      }
     })
   ]
 
@@ -61,10 +66,11 @@ resource "helm_release" "cert_manager" {
 resource "helm_release" "traefik" {
   name             = "traefik"
   version          = "41.0.0"
-  repository       = "https://helm.traefik.io/traefik"
+  repository       = "https://helm.traefik.io/charts"
   chart            = "traefik"
   namespace        = "traefik"
   create_namespace = true
+  take_ownership   = true
 
   values = [
     yamlencode({
@@ -87,6 +93,7 @@ resource "helm_release" "argo_cd" {
   chart            = "argo-cd"
   namespace        = "argo-cd"
   create_namespace = true
+  take_ownership   = true
 
   depends_on = [
     aws_eks_node_group.eks_node_group,
