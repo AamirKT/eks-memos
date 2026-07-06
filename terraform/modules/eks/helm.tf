@@ -66,7 +66,7 @@ resource "helm_release" "cert_manager" {
 resource "helm_release" "traefik" {
   name             = "traefik"
   version          = "41.0.0"
-  repository       = "https://helm.traefik.io/charts"
+  repository       = "https://helm.traefik.io/traefik"
   chart            = "traefik"
   namespace        = "traefik"
   create_namespace = true
