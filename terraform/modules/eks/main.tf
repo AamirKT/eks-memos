@@ -169,13 +169,13 @@ resource "aws_eks_pod_identity_association" "memos_pod_identity_association" {
 }
 
 resource "aws_eks_access_entry" "memos_access_entry" {
-  cluster_name  = var.cluster_name
+  cluster_name  = aws_eks_cluster.eks_cluster.name
   principal_arn = var.memos_access_policy_arn
   type          = "STANDARD"
 }
 
 resource "aws_eks_access_policy_association" "memos_access_policy_association" {
-  cluster_name  = var.cluster_name
+  cluster_name  = aws_eks_cluster.eks_cluster.name
   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
   principal_arn = var.memos_access_policy_arn
 
