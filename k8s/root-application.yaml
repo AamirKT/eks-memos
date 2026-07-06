@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/AamirKT/eks-memos.git
     targetRevision: main
-    path: k8s/argocd
+    path: k8s/bootstrap
     directory:
       recurse: true
   destination:
