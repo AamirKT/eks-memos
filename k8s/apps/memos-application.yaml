@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/AamirKT/eks-memos.git'
     targetRevision: main
-    path: k8s/app
+    path: k8s/memos
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: memos
