@@ -1,7 +1,7 @@
-## Production-Ready Memos Deployment on Amazon EKS
- ---
- Production-style deployment of the Memos application on Amazon EKS using Terraform, GitOps, ArgoCD, Traefik, GitHub Actions, and Kubernetes observability.
- 
+# End-to-End DevOps Deployment of Memos on Amazon EKS
+---
+A production-grade Kubernetes deployment demonstrating Terraform-based infrastructure provisioning, GitOps delivery with ArgoCD, automated CI/CD pipelines, AWS integrations, ingress management, secret management, TLS automation, and Kubernetes observability.
+
 ## Overview
 
 This project demonstrates deploying a cloud-native application on AWS using Terraform, Kubernetes, ArgoCD, and GitHub Actions.
@@ -13,6 +13,7 @@ The Memos application is deployed on Amazon EKS and exposed externally through T
 ![Memos Application](images/memos-page.png)
 
 ## Architecture
+
 ---
 ## Tech Stack
 
@@ -197,7 +198,11 @@ Infrastructure changes trigger:
 3. Terraform apply
 4. AWS resource provisioning
 
+GitHub Actions executing Terraform validation and generating an infrastructure deployment plan before changes are applied to AWS.
+
 ![Terraform Plan](images/terraform-plan.png)
+
+Terraform successfully provisioning AWS infrastructure and Kubernetes platform resources.
 
 ![Terraform Apply](images/terraform-apply.png)
 
@@ -249,6 +254,8 @@ ArgoCD manages:
 - Monitoring stack
 - Application configuration
 - Kubernetes resources
+
+ArgoCD managing Kubernetes workloads through GitOps, showing application health and synchronisation status.
   
 ![ArgoCD](images/argocd-page.png)
 
@@ -294,6 +301,8 @@ The monitoring stack provides visibility into:
 - Cluster performance
 
 Metrics are collected by Prometheus and visualised through Grafana dashboards.
+
+Grafana dashboards visualising Kubernetes and application metrics collected through Prometheus.
 
 ![grafana](images/grafana-page.png)
 
