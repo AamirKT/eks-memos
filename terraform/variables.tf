@@ -148,12 +148,6 @@ variable "domain_name" {
   default     = "aamir-memos.co.uk."
 }
 
-variable "zone_id" {
-  description = "The ID of the Route 53 hosted zone"
-  type        = string
-  default     = "Z10334603J0829B66W4Q5"
-}
-
 variable "memos_access_policy_arn" {
   description = "The ARN of the IAM policy for Memos access"
   type        = string

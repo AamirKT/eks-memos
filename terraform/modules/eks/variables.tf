@@ -68,11 +68,6 @@ variable "domain_name" {
   type        = string
 }
 
-variable "zone_id" {
-  description = "The ID of the Route 53 hosted zone"
-  type        = string
-}
-
 variable "memos_access_policy_arn" {
   description = "The ARN of the IAM policy for Memos access"
   type        = string

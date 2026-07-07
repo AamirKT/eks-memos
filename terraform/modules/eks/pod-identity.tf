@@ -1,10 +1,5 @@
 data "aws_caller_identity" "current" {}
 
-data "aws_route53_zone" "main" {
-  zone_id      = var.zone_id
-  private_zone = true
-}
-
 resource "aws_iam_role" "pod_identity_external_dns" {
   name = "${var.cluster_name}-pod-identity-external-dns"
 
@@ -20,35 +15,6 @@ resource "aws_iam_role" "pod_identity_external_dns" {
           "sts:AssumeRole",
           "sts:TagSession"
         ]
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy" "pod_identity_external_dns_policy" {
-  name = "${var.cluster_name}-pod-identity-external-dns-policy"
-  role = aws_iam_role.pod_identity_external_dns.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "route53:ChangeResourceRecordSets",
-          "route53:ListHostedZones",
-          "route53:ListResourceRecordSets"
-        ]
-        Resource = "arn:aws:route53:::hostedzone/${data.aws_route53_zone.main.zone_id}"
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "route53:ListHostedZones",
-          "route53:ListResourceRecordSets",
-          "route53:ListTagsForResource"
-        ]
-        Resource = "*"
       }
     ]
   })
