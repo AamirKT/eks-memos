@@ -5,7 +5,6 @@ on:
 
 env:
     AWS_REGION: eu-west-2
-    TF_VAR_route53_zone_id: ${{ vars.ROUTE53_ZONE_ID }}
     TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
 
 concurrency:
