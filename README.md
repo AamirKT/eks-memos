@@ -6,7 +6,11 @@
 
 This project demonstrates deploying a cloud-native application on AWS using Terraform, Kubernetes, ArgoCD, and GitHub Actions.
 
-The infrastructure is provisioned using Terraform, which also installs core Kubernetes platform components using Helm. Application deployments are managed through GitOps using ArgoCD. PostgreSQL persistence is provided by Amazon RDS, secrets are synchronised from AWS Secrets Manager using External Secrets Operator, TLS is automated using cert-manager, and cluster/application metrics are collected by Prometheus and visualised through Grafana.
+The infrastructure is provisioned using Terraform, which also installs core Kubernetes platform components using Helm. Application deployments are managed through GitOps using ArgoCD, with Git acting as the single source of truth. PostgreSQL persistence is provided by Amazon RDS, secrets are synchronised from AWS Secrets Manager using External Secrets Operator, TLS is automated using cert-manager, and cluster/application metrics are collected by Prometheus and visualised through Grafana.
+
+The Memos application is deployed on Amazon EKS and exposed externally through Traefik ingress with automated TLS.
+
+![Memos Application](images/memos-page.png)
 
 ## Architecture
 ---
@@ -166,15 +170,65 @@ The following Helm releases are deployed automatically:
 
 These platform services provide networking, security, DNS automation, secret management, and GitOps capabilities before any application workloads are deployed.
 
-## 3. Application Container Pipeline
+## 3. CI/CD Pipeline
 
-Application changes trigger the CI pipeline:
+The project uses GitHub Actions workflows to automate application delivery and infrastructure changes.
 
-1. GitHub Actions builds the Docker image
-2. The image is tagged and pushed to Amazon ECR
-3. Kubernetes deployment manifests are updated with the new image version
+### Application CI Pipeline
 
-The EKS cluster retrieves container images from ECR during deployment.
+Application changes trigger:
+
+1. Build Docker image
+2. Authenticate with Amazon ECR
+3. Push image to ECR
+4. Deploy updated image through ArgoCD
+
+GitHub Actions building the Docker image and pushing it to Amazon ECR.
+
+![Docker Build](images/build-and-push.png)
+
+
+### Infrastructure CI Pipeline
+
+Infrastructure changes trigger:
+
+1. Terraform formatting and validation
+2. Terraform plan generation
+3. Terraform apply
+4. AWS resource provisioning
+
+![Terraform Plan](images/terraform-plan.png)
+
+![Terraform Apply](images/terraform-apply.png)
+
+### Deployment Flow
+
+```text
+Developer
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+GitHub Actions
+    │
+    ├── Docker Build
+    │
+    ▼
+Amazon ECR
+    │
+    ▼
+ArgoCD Sync
+    │
+    ▼
+Amazon EKS
+    │
+    ▼
+Memos Application
+```
+
+Kubernetes nodes pull container images from Amazon ECR during deployment.
+
 
 ## 4. GitOps Deployment with ArgoCD
 
@@ -195,6 +249,8 @@ ArgoCD manages:
 - Monitoring stack
 - Application configuration
 - Kubernetes resources
+  
+![ArgoCD](images/argocd-page.png)
 
 ## 5. Request flow
 
@@ -239,6 +295,7 @@ The monitoring stack provides visibility into:
 
 Metrics are collected by Prometheus and visualised through Grafana dashboards.
 
+![grafana](images/grafana-page.png)
 
 ```text
 Kubernetes Resources
@@ -254,7 +311,6 @@ Monitoring Dashboards
 ```
 ---
 ## Security
-
 
 Security practices implemented:
 
@@ -278,49 +334,3 @@ Security practices implemented:
 - Multi-environment deployments (dev/staging/production)
 - Blue/Green deployments
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
