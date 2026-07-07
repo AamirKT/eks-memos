@@ -9,13 +9,18 @@ resource "helm_release" "external_dns" {
 
   values = [
     yamlencode({
-      provider = "aws"
-      aws = {
-        region = var.region
-      }
-      serviceAccount = {
-        name = "external-dns"
-      }
+      provider = "cloudflare"
+      env = [
+        {
+          name = "CF_API_TOKEN"
+          valueFrom = {
+            secretKeyRef = {
+              name = "cloudflare-api-token"
+              key  = "cloudflare-api-token"
+            }
+          }
+        }
+      ]
       txtOwnerId = var.cluster_name
     })
   ]
