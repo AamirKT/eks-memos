@@ -15,7 +15,7 @@ The Memos application is deployed on Amazon EKS and exposed externally through T
 ---
 ## Architecture
 
-![Architecture](images/architecture.png)
+![Architecture](images/architecture-memos.png)
 ---
 ## Tech Stack
 
