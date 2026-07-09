@@ -4,11 +4,13 @@ A production-grade Kubernetes deployment demonstrating Terraform-based infrastru
 
 ## Overview
 
-This project demonstrates deploying a cloud-native application on AWS using Terraform, Kubernetes, ArgoCD, and GitHub Actions.
+This project demonstrates deploying a containerised application on AWS using Infrastructure as Code, Kubernetes orchestration, GitOps delivery, and automated CI/CD practices.
 
-The infrastructure is provisioned using Terraform, which also deploys core Kubernetes platform components through the Helm provider. Application deployments are managed through GitOps using ArgoCD, with Git acting as the single source of truth. PostgreSQL persistence is provided by Amazon RDS, secrets are synchronised from AWS Secrets Manager using External Secrets Operator, TLS is automated using cert-manager, and cluster/application metrics are collected by Prometheus and visualised through Grafana.
+Terraform provisions the AWS infrastructure and installs core Kubernetes platform components using the Helm provider. Application deployments are managed through GitOps using ArgoCD, with Git acting as the single source of truth.
 
-The Memos application is deployed on Amazon EKS and exposed externally through Traefik ingress with automated TLS.
+PostgreSQL persistence is provided by Amazon RDS, secrets are synchronised from AWS Secrets Manager using External Secrets Operator, TLS is automated using cert-manager, and cluster/application metrics are collected by Prometheus and visualised through Grafana.
+
+The Memos application is deployed onto Amazon EKS and exposed externally through Traefik ingress with automated TLS.
 
 ![Memos Application](images/memos-page.png)
 
@@ -16,6 +18,9 @@ The Memos application is deployed on Amazon EKS and exposed externally through T
 ## Architecture
 
 ![Architecture](images/architecture-memos.png)
+
+The architecture separates public ingress from private workloads. User traffic enters through Cloudflare and a Network Load Balancer before reaching Traefik, Kubernetes services, and application pods. Worker nodes and platform components remain isolated within private subnets, while persistent application data is stored externally in Amazon RDS PostgreSQL.
+
 ---
 ## Tech Stack
 
@@ -40,6 +45,7 @@ The Memos application is deployed on Amazon EKS and exposed externally through T
 - Amazon EKS Kubernetes cluster
 - Amazon RDS PostgreSQL database
 - Amazon ECR container registry
+- Container image vulnerability scanning with Trivy
 - GitOps deployment with ArgoCD
 - Automated CI/CD with GitHub Actions
 - Traefik ingress controller
@@ -158,6 +164,8 @@ eks-memos/
             └── outputs.tf
 
 ```
+The repository separates infrastructure, Kubernetes manifests, and GitHub Actions workflows to keep provisioning, deployment, and application configuration independently manageable.
+
 ---
 
 ## Deployment Workflow
@@ -183,7 +191,9 @@ Terraform provisions:
 
 ## 2. Kubernetes Platform Installation
 
-After the EKS cluster and worker nodes are available, Terraform uses the Helm provider to install core Kubernetes services.
+After the EKS cluster and worker nodes are available, Terraform uses the Helm provider to install core Kubernetes platform services.
+
+Helm releases are managed through Terraform, allowing Kubernetes platform components to be version controlled and deployed alongside infrastructure changes.
 
 The following Helm releases are deployed automatically:
 
@@ -217,7 +227,7 @@ The project uses GitHub Actions workflows to automate application delivery and i
 
 ### Application CI Pipeline
 
-Application changes trigger:
+When application code changes are pushed, GitHub Actions automatically:
 
 1. Build Docker image
 2. Authenticate with Amazon ECR
@@ -225,7 +235,7 @@ Application changes trigger:
 4. Update Kubernetes manifests with the new image version
 5. ArgoCD detects the Git change and synchronises the deployment
 
-GitHub Actions building the Docker image and pushing it to Amazon ECR.
+GitHub Actions building the Docker image and pushing it to Amazon ECR
 
 ![Docker Build](images/build-and-push.png)
 
@@ -247,32 +257,6 @@ Terraform successfully provisioning AWS infrastructure and Kubernetes platform r
 
 ![Terraform Apply](images/terraform-apply.png)
 
-### Deployment Flow
-
-```text
-Developer
-    |
-    v
-GitHub Repository
-    |
-    +----------------+
-    |                |
-    v                v
-GitHub Actions       ArgoCD
-    |                |
-    v                v
-Amazon ECR      Kubernetes Manifests
-                     |
-                     v
-                  Amazon EKS
-                     |
-                     v
-              Memos Deployment
-```
-
-Kubernetes nodes pull container images from Amazon ECR during deployment.
-
-
 ## 5. GitOps Deployment with ArgoCD
 
 Once ArgoCD is installed by Terraform, it manages application deployments using Git as the source of truth.
@@ -292,8 +276,6 @@ ArgoCD manages:
 - Monitoring stack
 - Application configuration
 - Kubernetes resources
-
-ArgoCD managing Kubernetes workloads through GitOps, showing application health and synchronisation status.
   
 ![ArgoCD](images/argocd-page.png)
 
@@ -340,28 +322,13 @@ The monitoring stack provides visibility into:
 
 Metrics are collected by Prometheus and visualised through Grafana dashboards.
 
-Grafana dashboards visualising Kubernetes and application metrics collected through Prometheus.
-
 ![grafana](images/grafana-page.png)
 
-```text
-Kubernetes Resources
-        │
-        ▼
-   Prometheus
-        │
-        ▼
-     Grafana
-        │
-        ▼
-Monitoring Dashboards
-```
----
 ## Security
 
 Security practices implemented:
 
-- Private Kubernetes worker nodes
+- Worker nodes deployed in private subnets with no direct public access
 - HTTPS-only application access
 - TLS certificates managed automatically with cert-manager
 - Secrets stored in AWS Secrets Manager
@@ -372,12 +339,27 @@ Security practices implemented:
 - Container images stored securely in Amazon ECR
 - AWS Pod Identity used for Kubernetes workloads requiring AWS API access
 ---
+## Lessons Learned
+
+- Managing Kubernetes through GitOps simplifies deployments and configuration management.
+- Separating infrastructure provisioning (Terraform) from application delivery (ArgoCD) creates a repeatable deployment workflow.
+- External Secrets Operator enables secure secret management without storing sensitive values in Git.
+- Helm significantly reduces the complexity of deploying and maintaining Kubernetes platform components.
+- Observability is essential for operating Kubernetes workloads in production.
+---
 
 ## Future Improvements
 
-- Cluster Autoscaler
-- Loki for log aggregation
-- Alertmanager notifications
-- Multi-environment deployments (dev/staging/production)
-- Blue/Green deployments
+- Introduce Horizontal Pod Autoscaler (HPA) for application scaling
+- Integrate Loki for centralized log aggregation
+- Configure Alertmanager with Slack or email notifications
+- Support multiple environments (development, staging, production)
+
 ---
+## Author
+
+**Aamir Tamuri**
+
+[LinkedIn](https://www.linkedin.com/in/aamir-tamuri-491244349/) | [GitHub](https://github.com/AamirKT)
+
+DevOps Engineer with a focus on AWS, Kubernetes, Terraform, GitOps, and CI/CD automation.
