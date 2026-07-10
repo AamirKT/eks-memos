@@ -19,7 +19,7 @@ The Memos application is deployed onto Amazon EKS and exposed externally through
 
 ![Architecture](images/architecture-memos.png)
 
-The architecture separates public ingress from private workloads. User traffic enters through Cloudflare and a Network Load Balancer before reaching Traefik, Kubernetes services, and application pods. Worker nodes and platform components remain isolated within private subnets, while persistent application data is stored externally in Amazon RDS PostgreSQL.
+The architecture separates public ingress from private workloads. User traffic enters through Cloudflare and a Network Load Balancer before reaching Traefik, Kubernetes services, and application pods. Worker nodes, Kubernetes platform components, and application workloads remain isolated within private subnets, while persistent data is managed externally through Amazon RDS PostgreSQL.
 
 ---
 ## Tech Stack
@@ -43,6 +43,7 @@ The architecture separates public ingress from private workloads. User traffic e
 
 - Infrastructure as Code with Terraform
 - Amazon EKS Kubernetes cluster
+- Kubernetes Deployments, Services, Ingress, and ServiceAccounts
 - Amazon RDS PostgreSQL database
 - Amazon ECR container registry
 - Container image vulnerability scanning with Trivy
@@ -239,6 +240,22 @@ GitHub Actions building the Docker image and pushing it to Amazon ECR
 
 ![Docker Build](images/build-and-push.png)
 
+## Docker build performance
+
+This project compares **single-stage** and **multi-stage Docker builds** for the application to demonstrate container optimisation in a production deployment.
+
+
+| Build Type      | Disk Usage | Image Size | Build Time | Notes |
+|-----------------|-----------|------------|------------|-------|
+| **Single-stage** | 4.04 GB    | 936 MB     | 4 min 35s | Build dependencies and tooling included in final image |
+| **Multi-stage**  | 93.2 MB    | 23.5 MB      | 2 min 17s | Only production runtime dependencies included ||
+
+**Multi-stage builds offered significant improvements:**
+- **Lowered disk usage by 98%**  
+- **Shrunk image size by 97%**  
+- **Accelerated deployment with 50% faster build time**
+
+![Docker image](images/docker-images.png)
 
 ### Infrastructure CI Pipeline
 
